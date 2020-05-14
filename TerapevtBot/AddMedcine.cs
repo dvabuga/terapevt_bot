@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,11 +123,35 @@ namespace TerapevtBot
                     replyMarkup: replyKeyboardMarkup);
             }
 
+            //начинается логика определения следущего вопроса //ToDo вынести в отдельный метод
+            var lastQuestionScenatioType = question.ScenarioType;
+            var nextQuestionId = Guid.Empty;
+            var scenarioObject = JsonConvert.DeserializeObject<JObject>(question.Scenario.ToString());
 
+            if (lastQuestionScenatioType == QuestionScenarioType.Simple)
+            {
+                nextQuestionId = Guid.Parse(scenarioObject["next"].ToString());
+            }
+            else if (lastQuestionScenatioType == QuestionScenarioType.Complex)
+            {
+                var key = update.Message.Text;
+                nextQuestionId = Guid.Parse(scenarioObject[key].ToString());
+            }
+
+            //получили id следующего вопроса, задаем вопрос (вызов следующего вопроса так же вынести в отдельный метод)
+
+        }
+
+        private static async Task AskNextQuestion(Update update, TelegramBotClient Bot)
+        {
 
 
 
         }
+
+
+
+
 
 
         public static void AddParametrValue(Question question, Message message)
