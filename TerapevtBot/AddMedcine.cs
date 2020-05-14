@@ -1,6 +1,7 @@
 ﻿using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TerapevtBot
 {
@@ -68,7 +70,7 @@ namespace TerapevtBot
 
             var scenario = _context.Scenarios.Where(c => c.StartDate != null & c.Finished == false).FirstOrDefault(); // находим сценарий, который стартовал, но еще не закончен
 
-            if(scenario == null)
+            if (scenario == null)
             {
                 //что-то надо делать, если не найдено незавершенных сценариев, а мы оказались тут
             }
@@ -80,11 +82,12 @@ namespace TerapevtBot
                                                  .OrderBy(c => c.CreateDate)
                                                  .FirstOrDefault();
 
+            var question = lastAskedQuestionOfScenario.Question;
+            var param = question.Param;
+            var message = update.Message;
+
             if (lastAskedQuestionOfScenario != null)
             {
-                var question = lastAskedQuestionOfScenario.Question;
-                var param = question.Param;
-
                 var paramVlaue = new ParamValue()
                 {
                     Id = Guid.NewGuid(),
@@ -94,6 +97,34 @@ namespace TerapevtBot
                 };
                 //если параметр с СИ, то надо задать вопрос
             }
+
+            //Ask unit Question - вынести в отдельный метод
+            if (param.HasUnit) //если добавленный параметр имеет СИ, то задаем соответствующий вопрос
+            {
+                var unitQuestion = _context.Questions
+                                           .Where(c => c.Type == QuestionType.Unit)
+                                           .FirstOrDefault();
+
+                var answers = JsonConvert.DeserializeObject<List<string>>(unitQuestion.Answers.ToString());
+
+                var keys = new List<KeyboardButton>();
+
+                foreach (var answer in answers)
+                {
+                    var key = new KeyboardButton();
+                    keys.Add(key);
+                }
+                var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
+
+                await Bot.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: "Choose",
+                    replyMarkup: replyKeyboardMarkup);
+            }
+
+
+
+
 
         }
 

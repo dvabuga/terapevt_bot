@@ -24,7 +24,7 @@ namespace TerapevtBot
                     services.AddHostedService<Worker>();
                     var migrationsAssembly = typeof(Data.ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name;
                     services.AddDbContext<ApplicationDbContext>(options =>
-                                                      options.UseNpgsql("Host=92.255.196.53;Port=5432;Database=marketing;Username=denis;Password=Ip83NqgzgUl6*XKU;", b =>
+                                                      options.UseNpgsql("Host=localhost;Port=5432;Database=terapevtbot;Username=postgres;Password=postgres1;", b =>
                                                                   b.MigrationsAssembly(migrationsAssembly)));
                 });
     }

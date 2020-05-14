@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Data
 {
     public class Question
     {
+
+        [Key]
         public Guid Id { get; set; }
         public QuestionType Type { get; set; }
         public string Text { get; set; }
@@ -15,6 +18,8 @@ namespace Data
         public bool IsFirst { get; set; }
         public bool IsLast { get; set; }
         public Guid ScenarioId { get; set; }
+
+        [DataType("jsonb")]
         public string Answers { get; set; }
     }
 }

@@ -37,13 +37,6 @@ namespace TerapevtBot
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
-
-
-
-
-
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var cts = new CancellationTokenSource();
@@ -110,24 +103,7 @@ namespace TerapevtBot
         //    );
         //}
 
-        static async Task SendReplyKeyboard(Message message)
-        {
-            var replyKeyboardMarkup = new ReplyKeyboardMarkup(
-                new KeyboardButton[][]
-                {
-                        new KeyboardButton[] { "1.1", "1.2" },
-                        new KeyboardButton[] { "2.1", "2.2" },
-                },
-                resizeKeyboard: true
-            );
-
-            await Bot.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Choose",
-                replyMarkup: replyKeyboardMarkup
-
-            );
-        }
+       
 
 
         public static async Task HandleErrorAsync(Exception exception, CancellationToken cancellationToken)

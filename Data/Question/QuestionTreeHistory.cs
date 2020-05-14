@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Data
 {
     public class QuestionTreeHistory
     {
+        [Key]
         public Guid Id { get; set; }
         //public Guid QuestionTreeId { get; set; }
         public Guid QuestionId { get; set; }
