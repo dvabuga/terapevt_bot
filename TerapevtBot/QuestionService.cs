@@ -38,7 +38,7 @@ namespace TerapevtBot
                 Id = Guid.NewGuid(),
                 CreateDate = DateTimeOffset.Now,
                 QuestionId = question.Id,
-                ScenarioId = question.ScenarioId,
+               // ScenarioId = question.ScenarioId,
                 UserId = userId
             };
             _context.Add(history);

@@ -3,15 +3,17 @@ using System;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200516213730_PocoFix")]
+    partial class PocoFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,9 +121,8 @@ namespace Data.Migrations
                     b.Property<string>("Scenario")
                         .HasColumnType("text");
 
-                    b.Property<string>("ScenarioType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ScenarioType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -244,9 +245,8 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");

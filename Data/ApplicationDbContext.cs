@@ -48,6 +48,20 @@ namespace Data
                .Property(e => e.Type)
                .HasConversion(converterQuestionType);
 
+
+            var converterQuestionScenarioType = new EnumToStringConverter<QuestionScenarioType>();
+            modelBuilder
+               .Entity<Question>()
+               .Property(e => e.ScenarioType)
+               .HasConversion(converterQuestionScenarioType);
+
+
+            var converterScenarioType = new EnumToStringConverter<ScenarioType>();
+            modelBuilder
+               .Entity<Scenario>()
+               .Property(e => e.Type)
+               .HasConversion(converterScenarioType);
+
         }
     }
 }

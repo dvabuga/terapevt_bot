@@ -33,7 +33,9 @@ namespace TerapevtBot
             var scenario = new Scenario()
             {
                 Id = Guid.NewGuid(),
-                QuestionTreeId = Guid.Parse("guid добавления лекарства"),
+                Type = ScenarioType.AddMedcine,
+                Finished = false,
+                //QuestionTreeId = Guid.Parse("guid добавления лекарства"),
                 StartDate = DateTimeOffset.Now,
                 UserId = message.From.Id
             };
@@ -47,8 +49,9 @@ namespace TerapevtBot
             _context.Add(medcine);
 
             var firstQuestion = _context.Questions
+                                        .Include(c=>c.QuestionTree)
                                         .Where(c => c.IsFirst == true)
-                                        .Where(c => c.QuestionTreeId == scenario.QuestionTreeId)
+                                        .Where(c => c.QuestionTree.Type == QuestionTreeType.AddMedcine)
                                         .FirstOrDefault();
 
             await Bot.SendTextMessageAsync(
@@ -63,14 +66,13 @@ namespace TerapevtBot
                 QuestionId = firstQuestion.Id,
                 //QuestionTreeId = scenario.QuestionTreeId,
                 UserId = message.From.Id,
-                MedcinId = medcine.Id
+                MedcinId = medcine.Id,
+                ScenarioId = scenario.Id
             };
 
             _context.Add(history);
             _context.SaveChanges();
         }
-
-
 
 
         public static async Task ContinueMedcineAdding(Update update, TelegramBotClient Bot)
@@ -166,9 +168,11 @@ namespace TerapevtBot
 
         }
 
-        private static async Task AskNextQuestion(Guid medcinId, Update update, Guid nextQuestionId, TelegramBotClient Bot, ApplicationDbContext _context)
+        private static async Task AskNextQuestion(Guid scenarioId, Guid medcinId, Update update, Guid nextQuestionId, TelegramBotClient Bot, ApplicationDbContext _context)
         {
             var chatId = update.Message.Chat.Id;
+            var userId = update.Message.From.Id;
+
             var question = _context.Questions
                                    .Where(c => c.Id == nextQuestionId)
                                    .FirstOrDefault();
@@ -180,7 +184,7 @@ namespace TerapevtBot
                 text: question.Text
                 );
             }
-            else if(question.ScenarioType == QuestionScenarioType.Complex)
+            else if (question.ScenarioType == QuestionScenarioType.Complex)
             {
                 var answers = JsonConvert.DeserializeObject<List<string>>(question.Answers.ToString());
 
@@ -199,8 +203,17 @@ namespace TerapevtBot
                     replyMarkup: replyKeyboardMarkup);
             }
 
-            //var history = new 
+            var history = new QuestionTreeHistory()
+            {
+                Id = Guid.NewGuid(),
+                CreateDate = DateTimeOffset.Now,
+                MedcinId = medcinId,
+                ScenarioId = scenarioId,
+                UserId = userId
+            };
 
+            _context.Add(history);
+            _context.SaveChanges();
         }
 
 

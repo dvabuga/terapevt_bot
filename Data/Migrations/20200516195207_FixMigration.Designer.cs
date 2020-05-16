@@ -3,15 +3,17 @@ using System;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200516195207_FixMigration")]
+    partial class FixMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,9 +121,11 @@ namespace Data.Migrations
                     b.Property<string>("Scenario")
                         .HasColumnType("text");
 
-                    b.Property<string>("ScenarioType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("ScenarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ScenarioType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -134,8 +138,6 @@ namespace Data.Migrations
 
                     b.HasIndex("ParamId");
 
-                    b.HasIndex("QuestionTreeId");
-
                     b.ToTable("Questions");
                 });
 
@@ -147,9 +149,6 @@ namespace Data.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -241,12 +240,11 @@ namespace Data.Migrations
                     b.Property<bool>("Finished")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("QuestionTreeId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -261,12 +259,6 @@ namespace Data.Migrations
                     b.HasOne("Data.Param", "Param")
                         .WithMany()
                         .HasForeignKey("ParamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.QuestionTree", "QuestionTree")
-                        .WithMany()
-                        .HasForeignKey("QuestionTreeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
