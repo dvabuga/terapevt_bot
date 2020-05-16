@@ -82,9 +82,9 @@ namespace TerapevtBot
         {
             var action = (update.Message.Text.Split(' ').First()) switch
             {
-                "/add" => AddMedcine.NewMedcine(update, Bot),
+                "/add" => AddMedcine.NewMedcine(update, Bot, _provider),
                 // "/получить_препарат" => GetMedcine.GetMendcineByName(update, Bot),
-                _ => AddMedcine.ContinueMedcineAdding(update, Bot)
+                _ => AddMedcine.ContinueMedcineAdding(update, Bot, _provider)
             };
             await action;
 

@@ -16,15 +16,15 @@ namespace TerapevtBot
 {
     public class AddMedcine
     {
-        private static IServiceProvider _provider;
+        //private static IServiceProvider _provider;
 
-        public AddMedcine(IServiceProvider serviceProvider)
-        {
-            _provider = serviceProvider;
-        }
+        //public AddMedcine(IServiceProvider serviceProvider)
+        //{
+        //    _provider = serviceProvider;
+        //}
 
 
-        public static async Task NewMedcine(Update update, TelegramBotClient Bot)
+        public static async Task NewMedcine(Update update, TelegramBotClient Bot, IServiceProvider _provider)
         {
             using IServiceScope scope = _provider.CreateScope();
             var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -75,7 +75,7 @@ namespace TerapevtBot
         }
 
 
-        public static async Task ContinueMedcineAdding(Update update, TelegramBotClient Bot)
+        public static async Task ContinueMedcineAdding(Update update, TelegramBotClient Bot, IServiceProvider _provider)
         {
             using IServiceScope scope = _provider.CreateScope();
             var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
