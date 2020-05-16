@@ -14,7 +14,7 @@ namespace Data
         }
 
         public DbSet<Medcin> Medcins { get; set; }
-        public DbSet<MedcinParams> MedcinParams { get; set; }
+        public DbSet<MedcinParam> MedcinParams { get; set; }
         public DbSet<Param> Params { get; set; }
         public DbSet<ParamValue> ParamValues { get; set; }
         public DbSet<Question> Questions { get; set; }

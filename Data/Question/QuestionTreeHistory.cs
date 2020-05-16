@@ -15,5 +15,6 @@ namespace Data
         public DateTimeOffset CreateDate { get; set; }
         public int UserId { get; set; }
         public Guid ScenarioId { get; set; }
+        public Guid MedcinId { get; set; }
     }
 }

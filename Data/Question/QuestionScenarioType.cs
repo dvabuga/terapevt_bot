@@ -6,7 +6,7 @@ namespace Data
 {
     public enum QuestionScenarioType
     {
-        Simple, //просто вызываем следующий вопрос
+        Simple, //просто вызываем следующий вопрос - next:id
         Complex //взависимости от ответа вызываем соответствующий вопрос
     }
 }

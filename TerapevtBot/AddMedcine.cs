@@ -38,6 +38,14 @@ namespace TerapevtBot
                 UserId = message.From.Id
             };
 
+            _context.Add(scenario);
+
+            var medcine = new Medcin()
+            {
+                Id = Guid.NewGuid()
+            };
+            _context.Add(medcine);
+
             var firstQuestion = _context.Questions
                                         .Where(c => c.IsFirst == true)
                                         .Where(c => c.QuestionTreeId == scenario.QuestionTreeId)
@@ -54,7 +62,8 @@ namespace TerapevtBot
                 CreateDate = DateTimeOffset.Now,
                 QuestionId = firstQuestion.Id,
                 //QuestionTreeId = scenario.QuestionTreeId,
-                UserId = message.From.Id
+                UserId = message.From.Id,
+                MedcinId = medcine.Id
             };
 
             _context.Add(history);
@@ -70,6 +79,7 @@ namespace TerapevtBot
             var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             var scenario = _context.Scenarios.Where(c => c.StartDate != null & c.Finished == false).FirstOrDefault(); // находим сценарий, который стартовал, но еще не закончен
+            var userId = update.Message.From.Id;
 
             if (scenario == null)
             {
@@ -79,7 +89,7 @@ namespace TerapevtBot
             var lastAskedQuestionOfScenario = _context.QuestionTreeHistories
                                                    .Include(c => c.Question)
                                                     .ThenInclude(c => c.Param)
-                                                 .Where(c => c.ScenarioId == scenario.Id)
+                                                 .Where(c => c.ScenarioId == scenario.Id & c.UserId == userId)
                                                  .OrderBy(c => c.CreateDate)
                                                  .FirstOrDefault();
 
@@ -89,13 +99,25 @@ namespace TerapevtBot
 
             if (lastAskedQuestionOfScenario != null)
             {
+                var paramValueId = Guid.NewGuid();
+
                 var paramVlaue = new ParamValue()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = paramValueId,
                     ParamId = param.Id,
                     QuestionId = question.Id,
                     Value = update.Message.Text
                 };
+                _context.Add(paramVlaue);
+
+                var medcinParam = new MedcinParam()
+                {
+                    Id = Guid.NewGuid(),
+                    MedcinId = lastAskedQuestionOfScenario.MedcinId,
+                    ParamsValueId = paramValueId
+                };
+                _context.Add(medcinParam);
+
                 //если параметр с СИ, то надо задать вопрос
             }
 
@@ -134,23 +156,52 @@ namespace TerapevtBot
             }
             else if (lastQuestionScenatioType == QuestionScenarioType.Complex)
             {
-                var key = update.Message.Text;
+                var key = update.Message.Text; // ответ явлтся ключом для получения следующего вопроса
                 nextQuestionId = Guid.Parse(scenarioObject[key].ToString());
             }
+
+            _context.SaveChanges();
 
             //получили id следующего вопроса, задаем вопрос (вызов следующего вопроса так же вынести в отдельный метод)
 
         }
 
-        private static async Task AskNextQuestion(Update update, TelegramBotClient Bot)
+        private static async Task AskNextQuestion(Guid medcinId, Update update, Guid nextQuestionId, TelegramBotClient Bot, ApplicationDbContext _context)
         {
+            var chatId = update.Message.Chat.Id;
+            var question = _context.Questions
+                                   .Where(c => c.Id == nextQuestionId)
+                                   .FirstOrDefault();
 
+            if (/*question.Type == QuestionType.Parametr & */question.ScenarioType == QuestionScenarioType.Simple)
+            {
+                await Bot.SendTextMessageAsync(
+                chatId: chatId,
+                text: question.Text
+                );
+            }
+            else if(question.ScenarioType == QuestionScenarioType.Complex)
+            {
+                var answers = JsonConvert.DeserializeObject<List<string>>(question.Answers.ToString());
 
+                var keys = new List<KeyboardButton>();
+
+                foreach (var answer in answers)
+                {
+                    var key = new KeyboardButton();
+                    keys.Add(key);
+                }
+                var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
+
+                await Bot.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "Choose",
+                    replyMarkup: replyKeyboardMarkup);
+            }
+
+            var history = new 
 
         }
-
-
-
 
 
 
