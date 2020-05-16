@@ -199,7 +199,7 @@ namespace TerapevtBot
                     replyMarkup: replyKeyboardMarkup);
             }
 
-            var history = new 
+            //var history = new 
 
         }
 

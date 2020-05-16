@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Data
 {
-    [Key]
     public class ParamValue
     {
+        [Key]
         public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
         public Guid ParamId { get; set; }

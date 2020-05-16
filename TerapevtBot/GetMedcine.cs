@@ -15,12 +15,12 @@ namespace TerapevtBot
             _provider = serviceProvider;
         }
 
-        public static async Task GetMendcineByName(Update update, TelegramBotClient Bot)
+        public static async void GetMendcineByName(Update update, TelegramBotClient Bot)
         {
 
 
 
-
+            
 
         }
     }
