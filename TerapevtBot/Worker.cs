@@ -37,6 +37,7 @@ namespace TerapevtBot
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var cts = new CancellationTokenSource();
@@ -44,7 +45,7 @@ namespace TerapevtBot
                            new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
                            cts.Token
                         );
-
+                Console.ReadLine();
             }
         }
 
@@ -81,8 +82,8 @@ namespace TerapevtBot
         {
             var action = (update.Message.Text.Split(' ').First()) switch
             {
-                "/добавить_препарат" => AddMedcine.NewMedcine(update, Bot),
-               // "/получить_препарат" => GetMedcine.GetMendcineByName(update, Bot),
+                "/add" => AddMedcine.NewMedcine(update, Bot),
+                // "/получить_препарат" => GetMedcine.GetMendcineByName(update, Bot),
                 _ => AddMedcine.ContinueMedcineAdding(update, Bot)
             };
             await action;
@@ -103,7 +104,7 @@ namespace TerapevtBot
         //    );
         //}
 
-       
+
 
 
         public static async Task HandleErrorAsync(Exception exception, CancellationToken cancellationToken)
