@@ -170,6 +170,8 @@ namespace TerapevtBot
 
             if (question.IsLast)
             {
+                scenario.Finished = true;
+                _context.SaveChanges();
                 //ToDo прописать логику, если задан последний вопрос
                 return;
             }

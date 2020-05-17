@@ -12,6 +12,7 @@ namespace Data
         public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
         public Guid ParamId { get; set; }
+        public Param Param { get; set; }
         public string Value { get; set; }
         public string Unit { get; set; }
         public Guid MedcinId { get; set; }
