@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MihaZupan;
+using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -38,8 +39,11 @@ namespace TerapevtBot
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
+
+
             while (!stoppingToken.IsCancellationRequested)
             {
+
                 var cts = new CancellationTokenSource();
                 Bot.StartReceiving(
                            new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
@@ -51,6 +55,9 @@ namespace TerapevtBot
 
         public static async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
         {
+            using IServiceScope scope = _provider.CreateScope();
+            var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
             var handler = update.Type switch
             {
                 UpdateType.Message => BotOnMessageReceived(update),

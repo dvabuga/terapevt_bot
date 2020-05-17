@@ -49,7 +49,7 @@ namespace TerapevtBot
             _context.Add(medcine);
 
             var firstQuestion = _context.Questions
-                                        .Include(c=>c.QuestionTree)
+                                        .Include(c => c.QuestionTree)
                                         .Where(c => c.IsFirst == true)
                                         .Where(c => c.QuestionTree.Type == QuestionTreeType.AddMedcine)
                                         .FirstOrDefault();
@@ -85,6 +85,7 @@ namespace TerapevtBot
 
             if (scenario == null)
             {
+                return;
                 //что-то надо делать, если не найдено незавершенных сценариев, а мы оказались тут
             }
 
@@ -92,39 +93,56 @@ namespace TerapevtBot
                                                    .Include(c => c.Question)
                                                     .ThenInclude(c => c.Param)
                                                  .Where(c => c.ScenarioId == scenario.Id & c.UserId == userId)
-                                                 .OrderBy(c => c.CreateDate)
+                                                 .OrderByDescending(c => c.CreateDate)
                                                  .FirstOrDefault();
 
             var question = lastAskedQuestionOfScenario.Question;
             var param = question.Param;
             var message = update.Message;
 
+            var paramValue = _context.ParamValues.Where(c => c.QuestionId == question.Id & c.MedcinId == lastAskedQuestionOfScenario.MedcinId).FirstOrDefault();
             if (lastAskedQuestionOfScenario != null)
             {
                 var paramValueId = Guid.NewGuid();
 
-                var paramVlaue = new ParamValue()
+                if (param.HasUnit)
                 {
-                    Id = paramValueId,
-                    ParamId = param.Id,
-                    QuestionId = question.Id,
-                    Value = update.Message.Text
-                };
-                _context.Add(paramVlaue);
+                    if (paramValue != null && !string.IsNullOrEmpty(paramValue.Value))
+                    {
+                        paramValue.Unit = update.Message.Text;
+                    }
+                }
 
-                var medcinParam = new MedcinParam()
+                if (paramValue == null)
                 {
-                    Id = Guid.NewGuid(),
-                    MedcinId = lastAskedQuestionOfScenario.MedcinId,
-                    ParamsValueId = paramValueId
-                };
-                _context.Add(medcinParam);
+                    var paramVlaue = new ParamValue()
+                    {
+                        Id = paramValueId,
+                        ParamId = param.Id,
+                        QuestionId = question.Id,
+                        Value = update.Message.Text,
+                        MedcinId = lastAskedQuestionOfScenario.MedcinId
+                    };
+                    _context.Add(paramVlaue);
 
+                    var medcinParam = new MedcinParam()
+                    {
+                        Id = Guid.NewGuid(),
+                        MedcinId = lastAskedQuestionOfScenario.MedcinId,
+                        ParamsValueId = paramValueId
+                    };
+
+                    _context.Add(medcinParam);
+                }
+                
                 //если параметр с СИ, то надо задать вопрос
             }
 
+            _context.SaveChanges();
+            paramValue = _context.ParamValues.Where(c => c.QuestionId == question.Id & c.MedcinId == lastAskedQuestionOfScenario.MedcinId).FirstOrDefault();
+
             //Ask unit Question - вынести в отдельный метод
-            if (param.HasUnit) //если добавленный параметр имеет СИ, то задаем соответствующий вопрос
+            if (param.HasUnit && string.IsNullOrEmpty(paramValue.Unit)) //если добавленный параметр имеет СИ, то задаем соответствующий вопрос
             {
                 var unitQuestion = _context.Questions
                                            .Where(c => c.Type == QuestionType.Unit)
@@ -132,19 +150,28 @@ namespace TerapevtBot
 
                 var answers = JsonConvert.DeserializeObject<List<string>>(unitQuestion.Answers.ToString());
 
-                var keys = new List<KeyboardButton>();
+                var keys = new KeyboardButton[answers.Count()];
 
-                foreach (var answer in answers)
+                for (var i = 0; i < answers.Count(); i++)
                 {
-                    var key = new KeyboardButton();
-                    keys.Add(key);
+                    keys[i] = new KeyboardButton(answers[i]);
                 }
+
                 var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
 
                 await Bot.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: "Choose",
+                    text: "В чем измеряется указанная дозировка?",
                     replyMarkup: replyKeyboardMarkup);
+                return;
+            }
+
+            _context.SaveChanges();
+
+            if (question.IsLast)
+            {
+                //ToDo прописать логику, если задан последний вопрос
+                return;
             }
 
             //начинается логика определения следущего вопроса //ToDo вынести в отдельный метод
@@ -162,10 +189,10 @@ namespace TerapevtBot
                 nextQuestionId = Guid.Parse(scenarioObject[key].ToString());
             }
 
-            _context.SaveChanges();
+            
 
             //получили id следующего вопроса, задаем вопрос (вызов следующего вопроса так же вынести в отдельный метод)
-
+            await AskNextQuestion(scenario.Id, lastAskedQuestionOfScenario.MedcinId, update, nextQuestionId, Bot, _context);
         }
 
         private static async Task AskNextQuestion(Guid scenarioId, Guid medcinId, Update update, Guid nextQuestionId, TelegramBotClient Bot, ApplicationDbContext _context)
@@ -209,6 +236,7 @@ namespace TerapevtBot
                 CreateDate = DateTimeOffset.Now,
                 MedcinId = medcinId,
                 ScenarioId = scenarioId,
+                QuestionId = question.Id,
                 UserId = userId
             };
 

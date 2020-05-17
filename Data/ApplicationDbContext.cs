@@ -35,11 +35,11 @@ namespace Data
                .HasConversion(converterParamType);
 
 
-            var converterUnitType = new EnumToStringConverter<UnitType>();
-            modelBuilder
-               .Entity<ParamValue>()
-               .Property(e => e.Unit)
-               .HasConversion(converterUnitType);
+            //var converterUnitType = new EnumToStringConverter<UnitType>();
+            //modelBuilder
+            //   .Entity<ParamValue>()
+            //   .Property(e => e.Unit)
+            //   .HasConversion(converterUnitType);
 
 
             var converterQuestionType = new EnumToStringConverter<QuestionType>();
