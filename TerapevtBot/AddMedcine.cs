@@ -134,7 +134,7 @@ namespace TerapevtBot
 
                     _context.Add(medcinParam);
                 }
-                
+
                 //если параметр с СИ, то надо задать вопрос
             }
 
@@ -145,24 +145,35 @@ namespace TerapevtBot
             if (param.HasUnit && string.IsNullOrEmpty(paramValue.Unit)) //если добавленный параметр имеет СИ, то задаем соответствующий вопрос
             {
                 var unitQuestion = _context.Questions
-                                           .Where(c => c.Type == QuestionType.Unit)
+                                           .Where(c => c.Type == QuestionType.Unit & c.Id == question.RelatedQuestionId)
                                            .FirstOrDefault();
 
-                var answers = JsonConvert.DeserializeObject<List<string>>(unitQuestion.Answers.ToString());
-
-                var keys = new KeyboardButton[answers.Count()];
-
-                for (var i = 0; i < answers.Count(); i++)
+                if (unitQuestion.ResponseType == ResponseType.Buttons)
                 {
-                    keys[i] = new KeyboardButton(answers[i]);
+                    var answers = JsonConvert.DeserializeObject<List<string>>(unitQuestion.Answers.ToString());
+
+                    var keys = new KeyboardButton[answers.Count()];
+
+                    for (var i = 0; i < answers.Count(); i++)
+                    {
+                        keys[i] = new KeyboardButton(answers[i]);
+                    }
+
+                    var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
+
+                    await Bot.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: unitQuestion.Text,
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                else
+                {
+                    await Bot.SendTextMessageAsync(
+                                chatId: message.Chat.Id,
+                                text: unitQuestion.Text
+                                );
                 }
 
-                var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
-
-                await Bot.SendTextMessageAsync(
-                    chatId: message.Chat.Id,
-                    text: "В чем измеряется указанная дозировка?",
-                    replyMarkup: replyKeyboardMarkup);
                 return;
             }
 
@@ -187,11 +198,11 @@ namespace TerapevtBot
             }
             else if (lastQuestionScenatioType == QuestionScenarioType.Complex)
             {
-                var key = update.Message.Text; // ответ явлтся ключом для получения следующего вопроса
+                var key = update.Message.Text; // ответ является ключом для получения следующего вопроса
                 nextQuestionId = Guid.Parse(scenarioObject[key].ToString());
             }
 
-            
+
 
             //получили id следующего вопроса, задаем вопрос (вызов следующего вопроса так же вынести в отдельный метод)
             await AskNextQuestion(scenario.Id, lastAskedQuestionOfScenario.MedcinId, update, nextQuestionId, Bot, _context);
@@ -208,10 +219,32 @@ namespace TerapevtBot
 
             if (/*question.Type == QuestionType.Parametr & */question.ScenarioType == QuestionScenarioType.Simple)
             {
-                await Bot.SendTextMessageAsync(
-                chatId: chatId,
-                text: question.Text
-                );
+                if (question.ResponseType == ResponseType.Text)
+                {
+                    await Bot.SendTextMessageAsync(
+                                chatId: chatId,
+                                text: question.Text
+                                );
+                }
+                else
+                {
+                    var answers = JsonConvert.DeserializeObject<List<string>>(question.Answers.ToString());
+
+                    var keys = new KeyboardButton[answers.Count()];
+
+                    for (var i = 0; i < answers.Count(); i++)
+                    {
+                        keys[i] = new KeyboardButton(answers[i]);
+                    }
+
+                    var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
+
+                    await Bot.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: question.Text,
+                        replyMarkup: replyKeyboardMarkup);
+                }
+
             }
             else if (question.ScenarioType == QuestionScenarioType.Complex)
             {

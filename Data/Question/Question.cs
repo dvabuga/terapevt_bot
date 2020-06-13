@@ -14,13 +14,14 @@ namespace Data
         public string Text { get; set; }
         public Guid QuestionTreeId { get; set; }
         public QuestionTree QuestionTree { get; set; }
-        public Guid ParamId { get; set; }
+        public Guid? ParamId { get; set; }
         public Param Param { get; set; }
         public bool IsFirst { get; set; }
         public bool IsLast { get; set; }
         //public Guid ScenarioId { get; set; }
         public QuestionScenarioType ScenarioType { get; set; }
         public ResponseType ResponseType { get; set; }
+        public Guid? RelatedQuestionId { get; set; }
 
         [DataType("jsonb")]
         public string Scenario { get; set; }

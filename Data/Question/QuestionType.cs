@@ -7,6 +7,7 @@ namespace Data
     public enum QuestionType
     {
         Parametr,
+        Auxiliary,
         Unit,
         Recept
     }
