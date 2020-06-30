@@ -254,7 +254,7 @@ namespace TerapevtBot
 
                 foreach (var answer in answers)
                 {
-                    var key = new KeyboardButton();
+                    var key = new KeyboardButton(answer);
                     keys.Add(key);
                 }
                 var replyKeyboardMarkup = new ReplyKeyboardMarkup(keys, true, true);
