@@ -10,8 +10,9 @@ namespace Data
         [Key]
         public Guid Id { get; set; }
         public Guid ReceptId { get; set; }
-        public Guid ParamId { get; set; }
+        public Guid ParamValueId { get; set; }
         public Guid ReceptRowId { get; set; }
+        public DateTimeOffset? DateTimeCreate { get; set; }
 
     }
 }

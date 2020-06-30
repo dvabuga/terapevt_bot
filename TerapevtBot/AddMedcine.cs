@@ -101,41 +101,15 @@ namespace TerapevtBot
             var message = update.Message;
 
             var paramValue = _context.ParamValues.Where(c => c.QuestionId == question.Id & c.MedcinId == lastAskedQuestionOfScenario.MedcinId).FirstOrDefault();
-            if (lastAskedQuestionOfScenario != null)
+            if (lastAskedQuestionOfScenario != null & question.Type != QuestionType.Recept)
             {
-                var paramValueId = Guid.NewGuid();
+                AddValue(update, _context, lastAskedQuestionOfScenario, question, param, paramValue);
+            }
+            else // решаем что это вопрос с параметром из рецепта
+            {
+                AddValue(update, _context, lastAskedQuestionOfScenario, question, param, paramValue);
 
-                if (param.HasUnit)
-                {
-                    if (paramValue != null && !string.IsNullOrEmpty(paramValue.Value))
-                    {
-                        paramValue.Unit = update.Message.Text;
-                    }
-                }
 
-                if (paramValue == null)
-                {
-                    var paramVlaue = new ParamValue()
-                    {
-                        Id = paramValueId,
-                        ParamId = param.Id,
-                        QuestionId = question.Id,
-                        Value = update.Message.Text,
-                        MedcinId = lastAskedQuestionOfScenario.MedcinId
-                    };
-                    _context.Add(paramVlaue);
-
-                    var medcinParam = new MedcinParam()
-                    {
-                        Id = Guid.NewGuid(),
-                        MedcinId = lastAskedQuestionOfScenario.MedcinId,
-                        ParamsValueId = paramValueId
-                    };
-
-                    _context.Add(medcinParam);
-                }
-
-                //если параметр с СИ, то надо задать вопрос
             }
 
             _context.SaveChanges();
@@ -206,6 +180,42 @@ namespace TerapevtBot
 
             //получили id следующего вопроса, задаем вопрос (вызов следующего вопроса так же вынести в отдельный метод)
             await AskNextQuestion(scenario.Id, lastAskedQuestionOfScenario.MedcinId, update, nextQuestionId, Bot, _context);
+        }
+
+        private static void AddValue(Update update, ApplicationDbContext _context, QuestionTreeHistory lastAskedQuestionOfScenario, Question question, Param param, ParamValue paramValue)
+        {
+            var paramValueId = Guid.NewGuid();
+
+            if (param.HasUnit)
+            {
+                if (paramValue != null && !string.IsNullOrEmpty(paramValue.Value))
+                {
+                    paramValue.Unit = update.Message.Text;
+                }
+            }
+
+            if (paramValue == null)
+            {
+                var paramVlaue = new ParamValue()
+                {
+                    Id = paramValueId,
+                    ParamId = param.Id,
+                    QuestionId = question.Id,
+                    Value = update.Message.Text,
+                    MedcinId = lastAskedQuestionOfScenario.MedcinId,
+                    DateTimeCreate = DateTimeOffset.Now
+                };
+                _context.Add(paramVlaue);
+
+                var medcinParam = new MedcinParam()
+                {
+                    Id = Guid.NewGuid(),
+                    MedcinId = lastAskedQuestionOfScenario.MedcinId,
+                    ParamsValueId = paramValueId
+                };
+
+                _context.Add(medcinParam);
+            }
         }
 
         private static async Task AskNextQuestion(Guid scenarioId, Guid medcinId, Update update, Guid nextQuestionId, TelegramBotClient Bot, ApplicationDbContext _context)
@@ -279,15 +289,12 @@ namespace TerapevtBot
             _context.SaveChanges();
         }
 
-
-
-        public static void AddParametrValue(Question question, Message message)
+        private static AddReceptParametr()
         {
 
 
-
-
         }
+
 
 
     }

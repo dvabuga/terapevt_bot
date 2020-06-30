@@ -16,5 +16,6 @@ namespace Data
         public string Value { get; set; }
         public string Unit { get; set; }
         public Guid MedcinId { get; set; }
+        public DateTimeOffset? DateTimeCreate { get; set; }
     }
 }
