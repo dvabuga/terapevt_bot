@@ -7,6 +7,7 @@ namespace Data
     public enum ParamType
     {
         Text,
-        Recept
+        Recept,
+        ReceptType
     }
 }

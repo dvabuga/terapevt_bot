@@ -32,7 +32,7 @@ namespace TerapevtBot
             _logger = logger;
             _provider = serviceProvider;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            var p = new HttpToSocks5Proxy("51.15.109.147", 1337, "socksuser", "Xzws@:=AU$ytW9da5ArsnD\"}2=UZ*)wF<5mFVg9{Q-(`q");
+            var p = new HttpToSocks5Proxy("51.15.109.147", 1337, "socksuser", "Xzws@:=AU$ytW9da5ArsnD\"}2=UZ*)wF<5mFVg9{Q-(`q"); //старый неработающий сервак и вообще bad prcactise :]
             Bot = new TelegramBotClient("1154497230:AAHIkWfOeND7SpdTmgVLD-DzHMHdR-EOog4", p);
         }
 
