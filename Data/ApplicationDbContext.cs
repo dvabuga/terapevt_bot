@@ -19,7 +19,7 @@ namespace Data
         public DbSet<ParamValue> ParamValues { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionTree> QuestionTrees { get; set; }
-        public DbSet<Recept> Recepts { get; set; }
+        public DbSet<ReceptTemplate> Recepts { get; set; }
         public DbSet<ReceptParam> ReceptParams { get; set; }
         public DbSet<ReceptRow> ReceptRows { get; set; }
         public DbSet<Scenario> Scenarios { get; set; }

@@ -5,13 +5,10 @@ using System.Text;
 
 namespace Data
 {
-    public class Recept
+    public class ReceptTemplate
     {
         [Key]
         public Guid Id { get; set; }
-        public bool? ByAge { get; set; }
-        public bool? ByWeight { get; set; }
-        public Guid? ReceptTemplateId { get; set; }
-
+        public string Template { get; set; }
     }
 }

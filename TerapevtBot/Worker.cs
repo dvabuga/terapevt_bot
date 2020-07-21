@@ -110,8 +110,6 @@ namespace TerapevtBot
         //}
 
 
-
-
         public static async Task HandleErrorAsync(Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch

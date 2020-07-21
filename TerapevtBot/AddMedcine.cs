@@ -151,6 +151,31 @@ namespace TerapevtBot
                 return;
             }
 
+            if (question.Type == QuestionType.Recept)
+            {
+                var receptType = new Recept()
+                {
+                    Id = Guid.NewGuid()
+                };
+            }
+
+
+
+            if (question.Type == QuestionType.ReceptType)
+            {
+
+
+
+                var questionResponse = message.Text;
+                if (questionResponse == "вес")
+                {
+
+                }
+
+            }
+
+
+
             _context.SaveChanges();
 
             if (question.IsLast)
@@ -288,13 +313,6 @@ namespace TerapevtBot
             _context.Add(history);
             _context.SaveChanges();
         }
-
-        private static AddReceptParametr()
-        {
-
-
-        }
-
 
 
     }
