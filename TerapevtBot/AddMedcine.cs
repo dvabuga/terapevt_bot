@@ -155,23 +155,25 @@ namespace TerapevtBot
             {
                 var receptType = new Recept()
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    ScenarioId = scenario.Id
                 };
             }
 
-
-
             if (question.Type == QuestionType.ReceptType)
             {
-
-
-
                 var questionResponse = message.Text;
+                var recept = _context.Recepts.Where(c => c.ScenarioId == scenario.Id).FirstOrDefault();
+
                 if (questionResponse == "вес")
                 {
-
+                    recept.ByWeight = true;
                 }
 
+                if (questionResponse == "возраст")
+                {
+                    recept.ByAge = true;
+                }
             }
 
 
