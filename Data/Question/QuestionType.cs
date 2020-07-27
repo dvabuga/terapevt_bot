@@ -9,6 +9,7 @@ namespace Data
         Parametr,
         Auxiliary,
         Unit,
-        Recept
+        Recept,
+        ReceptType
     }
 }
