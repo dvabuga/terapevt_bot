@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerapevtBot", "TerapevtBot.csproj", "{E4062384-3E7B-4997-AB44-23446CDBC208}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerapevtBot", "TerapevtBot\TerapevtBot.csproj", "{E4062384-3E7B-4997-AB44-23446CDBC208}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "..\Data\Data.csproj", "{084D338C-8D2A-4F79-94C0-022261AB94E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{084D338C-8D2A-4F79-94C0-022261AB94E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
